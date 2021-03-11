@@ -11,6 +11,7 @@ using System.Media;
 
 namespace Air_Hockey
 {
+    // Hunter Hansen
     public partial class Form1 : Form
     {
         #region Variables
@@ -163,11 +164,11 @@ namespace Air_Hockey
             {
                 player1X -= paddleSpeed;
             }
-            if (sDown == true && player1Y < 475 - paddleHeight)
+            if (sDown == true && player1Y < this.Height - 10 - paddleHeight)
             {
                 player1Y += paddleSpeed;
             }
-            if (dDown == true && player1X < 365 - paddleHeight)
+            if (dDown == true && player1X < this.Width - 10 - paddleHeight)
             {
                 player1X += paddleSpeed;
             }
@@ -182,11 +183,11 @@ namespace Air_Hockey
             {
                 player2X -= paddleSpeed;
             }
-            if (downArrowDown == true && player2Y < 250 - paddleHeight)
+            if (downArrowDown == true && player2Y < this.Height - 10 - paddleHeight)
             {
                 player2Y += paddleSpeed;
             }
-            if (rightArrowDown == true && player2X < 365 - paddleHeight)
+            if (rightArrowDown == true && player2X < this.Width - 10 - paddleHeight)
             {
                 player2X += paddleSpeed;
             }
@@ -195,11 +196,11 @@ namespace Air_Hockey
             #region Collisions
             #region Puck Collisions
             //Wall Puck Collisions
-            if (puckX > 365 - puckHeight || puckX < 10)
+            if (puckX > this.Width - 20 - puckHeight || puckX < 10)
             {
                 puckXSpeed *= -1;
             }
-            if (puckY < 10 || puckY > 480 - puckHeight)
+            if (puckY < 10 || puckY > this.Height - 20 - puckHeight)
             {
                 puckYSpeed *= -1;
             }
@@ -367,8 +368,8 @@ namespace Air_Hockey
             e.Graphics.DrawRectangle(greyPen, 0, 0, 10, 600);
             e.Graphics.FillRectangle(greyBrush, 0, 0, 10, 600);
             
-            e.Graphics.DrawRectangle(greyPen, 365, 0, 10, 600);
-            e.Graphics.FillRectangle(greyBrush, 365, 0, 10, 600);
+            e.Graphics.DrawRectangle(greyPen, this.Width - 10, 0, 10, 600);
+            e.Graphics.FillRectangle(greyBrush, this.Width - 10, 0, 10, 600);
             //Top Side
             e.Graphics.DrawRectangle(greyPen, 0, 0, 140, 10);
             e.Graphics.FillRectangle(greyBrush, 0, 0, 140, 10);

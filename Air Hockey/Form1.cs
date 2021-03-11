@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Media;
 
 namespace Air_Hockey
 {
@@ -29,11 +30,10 @@ namespace Air_Hockey
         #region Puck Variables
         int puckX = 177;
         int puckY = 239;
-        int puckXSpeed = 6;
-        int puckYSpeed = 6;
+        int puckXSpeed = 0;
+        int puckYSpeed = 0;
         int puckHeight = 25;
         int puckWidth = 25;
-        int accelTime;
         #endregion
         #region Controls Variables
         bool wDown = false;
@@ -56,6 +56,11 @@ namespace Air_Hockey
         Pen bluePen = new Pen(Color.Blue);
         Pen blackPen = new Pen(Color.Black);
         Pen greyPen = new Pen(Color.Gray);
+        #endregion
+        #region SoundPlayers
+        SoundPlayer hit = new SoundPlayer(Properties.Resources.hit);
+        SoundPlayer goal = new SoundPlayer(Properties.Resources.goal);
+        SoundPlayer gameWin = new SoundPlayer(Properties.Resources.gameWin);
         #endregion
         #endregion
 
@@ -143,71 +148,53 @@ namespace Air_Hockey
         {
             int X = puckX;
             int Y = puckY;
-
-            Rectangle puckRec = new Rectangle(puckX, puckY, puckWidth, puckHeight);
             #region Puck Movement
             puckX += puckXSpeed;
             puckY += puckYSpeed;
-            accelTime++;
-           /* if (accelTime % 25 == 0)
-            {
-                if (puckXSpeed < 0)
-                {
-                    puckXSpeed += 1;
-                }
-                else if (puckXSpeed > 0)
-                {
-                    puckXSpeed -= 1;
-                }
-                if (puckYSpeed < 0)
-                {
-                    puckYSpeed += 1;
-                }
-                else if (puckYSpeed > 0)
-                {
-                    puckYSpeed -= 1;
-                }
-           
-            }
-           */
             #endregion
             #region Player Movement
+            #region Player 1 Movement
             //Player 1 Controls
-            if (wDown == true && player1Y > 0)
+            if (wDown == true && player1Y > 260)
             {
                 player1Y -= paddleSpeed;
             }
-            if (aDown == true && player1X > 0)
+            if (aDown == true && player1X > 10)
             {
                 player1X -= paddleSpeed;
             }
-            if (sDown == true && player1Y < this.Height - paddleHeight)
+            if (sDown == true && player1Y < 475 - paddleHeight)
             {
                 player1Y += paddleSpeed;
             }
-            if (dDown == true && player1X < 370 - paddleHeight)
+            if (dDown == true && player1X < 365 - paddleHeight)
             {
                 player1X += paddleSpeed;
             }
+            #endregion
+            #region Player 2 Movement
             //Player 2 Controls
-            if (upArrowDown == true && player2Y > 0)
+            if (upArrowDown == true && player2Y > 10)
             {
                 player2Y -= paddleSpeed;
             }
-            if (leftArrowDown == true && player2X > 0)
+            if (leftArrowDown == true && player2X > 10)
             {
                 player2X -= paddleSpeed;
             }
-            if (downArrowDown == true && player2Y < this.Height - paddleHeight)
+            if (downArrowDown == true && player2Y < 250 - paddleHeight)
             {
                 player2Y += paddleSpeed;
             }
-            if (rightArrowDown == true && player2X < this.Width - paddleHeight)
+            if (rightArrowDown == true && player2X < 365 - paddleHeight)
             {
                 player2X += paddleSpeed;
             }
             #endregion
+            #endregion
             #region Collisions
+            #region Puck Collisions
+            //Wall Puck Collisions
             if (puckX > 365 - puckHeight || puckX < 10)
             {
                 puckXSpeed *= -1;
@@ -216,106 +203,144 @@ namespace Air_Hockey
             {
                 puckYSpeed *= -1;
             }
+            #endregion
+            #region Player Puck Collisions
+            //Player Puck Collisions
             if (puckXSpeed != -1000)
             {
+                #region Player And Puck Hitboxes
                 Rectangle player1Rec = new Rectangle(player1X, player1Y, paddleWidth, paddleHeight);
                 Rectangle player2Rec = new Rectangle(player2X, player2Y, paddleWidth, paddleHeight);
-
+                Rectangle puckRec = new Rectangle(puckX + 10, puckY, 5, puckHeight);
+                Rectangle puckLeft = new Rectangle(puckX + 2, puckY, 2, puckHeight);
+                Rectangle puckRight = new Rectangle(puckX + 23, puckY, 2, puckHeight);
+                #endregion
+                #region PLayer 1 Puck Collisions
                 if (player1Rec.IntersectsWith(puckRec))
                 {
-                    //puckXSpeed *= -1;
-                    //puckX = puckX + puckXSpeed + 1;
-                    puckX = X;
-                    puckY = Y;
-                    puckYSpeed *= -1;
-                    puckXSpeed *= -1;
-                    accelTime = 0;
-                    /*if (wDown == true)
-                    {
-                        puckYSpeed = 6;
-                    }
-                    if (sDown == true)
-                    {
-                        puckYSpeed = -6;
-                    }
-                    if (aDown == true)
-                    {
-                        puckXSpeed = -6;
-                    }
-                    if (dDown == true)
+                    if (puckXSpeed == 0)
                     {
                         puckXSpeed = 6;
+                        puckYSpeed = 6;
                     }
-                    */
+                    else
+                    {
+                       puckYSpeed *= -1;
 
-                    //puckY = puckY + puckYSpeed + 1;
+                       puckX = X;
+                       puckY = Y;
+                       hit.Play();
+                    }
                 }
-                else if (player2Rec.IntersectsWith(puckRec))
+                else if(player1Rec.IntersectsWith(puckLeft) || player1Rec.IntersectsWith(puckRight))
                 {
-                    puckX = X;
-                    puckY = Y;
-                    puckYSpeed *= -1;
-                    accelTime = 0;
-
-                    /*if (upArrowDown == true)
-                    {
-                        puckYSpeed = 6;
-                    }
-                    if (downArrowDown == true)
-                    {
-                        puckYSpeed = -6;
-                    }
-                    if (leftArrowDown == true)
-                    {
-                        puckXSpeed = -6;
-                    }
-                    if (rightArrowDown == true)
+                    if (puckXSpeed == 0)
                     {
                         puckXSpeed = 6;
+                        puckYSpeed = 6;
                     }
-                    //puckY = puckY + puckYSpeed + 1;
-                    */
+                    else
+                    {
+                        puckXSpeed *= -1;
+
+                         puckX = X;
+                         puckY = Y;
+                         hit.Play();
+                    }
                 }
+                #endregion
+                #region Player 2 Puck Collisions
+                if (player2Rec.IntersectsWith(puckRec))
+                {
+                    if (puckXSpeed == 0)
+                    {
+                        puckXSpeed = 6;
+                        puckYSpeed = 6;
+                    }
+                    else
+                    {
+                        puckYSpeed *= -1;
+
+                        puckX = X;
+                        puckY = Y;
+                        hit.Play();
+                    }
+                }
+                else if (player2Rec.IntersectsWith(puckLeft) || player2Rec.IntersectsWith(puckRight))
+                {
+                    if (puckXSpeed == 0)
+                    {
+                        puckXSpeed = 6;
+                        puckYSpeed = 6;
+                    }
+                    else
+                    {
+                        puckXSpeed *= -1;
+
+                        puckX = X;
+                        puckY = Y;
+                        hit.Play();
+                    }
+                }
+                #endregion
+               
             }
             #endregion
+            #endregion
             #region Scoring
+            #region Hit Boxes
             Rectangle player2Net = new Rectangle(140, 0, 110, 15);
             Rectangle player1Net = new Rectangle(140, 475, 110, 15);
-            if (puckRec.IntersectsWith(player1Net))
+            Rectangle puckGoal = new Rectangle(puckX , puckY, puckWidth, puckHeight);
+            #endregion
+            #region Player 1 Goal
+            if (puckGoal.IntersectsWith(player1Net))
             {
                 player2Score++;
                 player2ScoreLabel.Text = $"{player2Score}";
 
                 puckX = 177;
                 puckY = 239;
+
+                puckYSpeed = 0;
+                puckXSpeed = 0;
+                goal.Play();
             }
-            if (puckRec.IntersectsWith(player2Net))
+            #endregion
+            #region Player 2 Goal
+            if (puckGoal.IntersectsWith(player2Net))
             {
                 player1Score++;
                 player1ScoreLabel.Text = $"{player1Score}";
 
                 puckX = 177;
                 puckY = 239;
+
+                puckYSpeed = 0;
+                puckXSpeed = 0;
+                goal.Play();
             }
+            #endregion
+            #region Game Winning
             if (player1Score == 3)
             {
                 winLabel.Text = "Player 1 Won!";
+                gameWin.Play();
                 gameTimer.Enabled = false;
             }
-            else if(player2Score == 3)
+            else if (player2Score == 3)
             {
                 winLabel.Text = "Player 2 Won!";
+                gameWin.Play();
                 gameTimer.Enabled = false;
             }
+            #endregion
             #endregion
             Refresh();
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            Console.WriteLine(player1X);
-            Console.WriteLine(player1Y);
-
             #region Rink Lines
             e.Graphics.DrawRectangle(bluePen, 0, 30, 500, 10);
             e.Graphics.FillRectangle(blueBrush, 0, 30, 500, 10);

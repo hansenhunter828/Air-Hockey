@@ -183,7 +183,7 @@ namespace Air_Hockey
             {
                 player2X -= paddleSpeed;
             }
-            if (downArrowDown == true && player2Y < this.Height - 10 - paddleHeight)
+            if (downArrowDown == true && player2Y < 260 - 10 - paddleHeight)
             {
                 player2Y += paddleSpeed;
             }
